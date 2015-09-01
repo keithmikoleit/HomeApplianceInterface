@@ -33,6 +33,7 @@
 
 # PSoC Creator Files
 .DS_Store
+*.bak
 *.cywrk.*
 *.cyprj.*
 *.cycdx
