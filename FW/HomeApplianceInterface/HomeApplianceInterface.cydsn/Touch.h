@@ -24,9 +24,6 @@
 #define TOUCH_IDLE_SCAN_PERIOD_MS                     (100)    
 /* How often in system ticks this process should run with no active touch */
 #define TOUCH_IDLE_SCAN_PERIOD                        (TOUCH_IDLE_SCAN_PERIOD_MS / SYSTEM_TICK_TIME_MS)
-/* Wrist detect scan period in msec */
-#define WRIST_DETECT_SCAN_PERIOD_MS                   (500)
-#define WRIST_DETECT_SCAN_PERIOD                      (WRIST_DETECT_SCAN_PERIOD_MS/ SYSTEM_TICK_TIME_MS)
 
 #define S_TOUCH_STATE_INIT                            (TOUCH_STARTSCAN)
 
@@ -34,9 +31,14 @@
 extern uint16 Touch_Timer_Count;
 extern uint16 Touch_Period;
 extern uint8 Touch_Enable;
-extern uint8 TouchIntFired;
-extern uint8 EDAWristDetectScan;
 
+/* EDA Output Data Struct */
+typedef struct{
+    uint8 CurrentCentroid;
+    uint8 Data_Ready;
+}Touch_Output;
+extern Touch_Output TouchResult;    
+    
 /* Error definitions.  keep the PROCESSNAME_ERROR_DESCRIPTION format for error log parsing */
 #define TOUCH_ERROR_DEFAULT_STATE                     (0u)
 #define TOUCH_ERROR_FAILED_TO_REGISTER_TESTMUX        (1u)
@@ -48,10 +50,6 @@ extern uint8 EDAWristDetectScan;
 #define TOUCH_DEBUG_START_SCAN                        (0x02)
 #define TOUCH_DEBUG_WAIT_FOR_SCAN                     (0x04)
 #define TOUCH_DEBUG_PROCESS_RESULTS                   (0x08)
-#define TOUCH_DEBUG_SCAN_EDA_H                        (0x10)
-#define TOUCH_DEBUG_PROCESS_EDA_H                     (0x20)
-#define TOUCH_DEBUG_SCAN_EDA_L                        (0x40)
-#define TOUCH_DEBUG_PROCESS_EDA_L                     (0x80)
 
 /* Touch State Machine */    
 typedef enum _TOUCH_STATE
@@ -59,11 +57,6 @@ typedef enum _TOUCH_STATE
     TOUCH_STARTSCAN = 0u,
     TOUCH_IS_SCAN_COMPLETE,
     TOUCH_PROCESS_RESULTS,
-    WRIST_DETECT_SCAN_H,
-    WRIST_DETECT_PROCESS_H,
-    WRIST_DETECT_SCAN_L,
-    WRIST_DETECT_PROCESS_L,
-    WRIST_DETCT_FINISH_SCAN
 } T_TOUCH_STATE;
 
 /* Process Defines */
@@ -99,16 +92,6 @@ typedef enum _TOUCH_STATE
 #define DIRECTION_LEFT                  (0x00)
 #define DIRECTION_RIGHT                 (0x01)
 
-/* Default Wrist detect parameters */
-/* These were taken from autotuning the BLE-042 slider sensors.
- * Should be further tuned in a final system for best performance */
-#define WRIST_DETECT_MOD_DAC                        (0x51)
-#define WRIST_DETECT_COMP_DAC                       (0x50)
-#define EDA_PIN_PORT                                (1u)
-#define EDA_H_PIN_SHIFT                             (0)
-#define EDA_L_PIN_SHIFT                             (7)
-#define CONNECT_AMUXL_AMUXR                         (0x03)
-
 /* Function Prototypes */
 
 /* Coop Loop Functions */
@@ -117,7 +100,6 @@ void Touch_Process_Update(void);
 void Touch_Process(void);
 
 /* Process Specific Functions */
-uint8 TouchInterruptFired(void);
 uint8 GetGesture(void);
     
 /* Macros */
