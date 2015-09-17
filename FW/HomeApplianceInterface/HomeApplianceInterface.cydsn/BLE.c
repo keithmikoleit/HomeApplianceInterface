@@ -52,6 +52,7 @@ void RSCS_Event_Handler(uint32 event, void *eventParam);
 void Check_For_BLE_Data(void);
 void Update_Gatts_Attribute(CYBLE_GATT_DB_ATTR_HANDLE_T handle, uint8* data, uint8 length);
 void Send_BAS_Over_BLE(void);
+void Send_Touch_Over_BLE(void);
 
 /***************************************
 *   Interal Varaibles
@@ -97,6 +98,7 @@ void BLE_Process(void)
     
     /* Call BLE Output Functions */
     Send_BAS_Over_BLE();
+    Send_Touch_Over_BLE();
     
     /* Check for new written data from central */
     Check_For_BLE_Data();
@@ -267,6 +269,31 @@ void Send_BAS_Over_BLE(void)
         }
         BattResult.Data_Ready = false;
     }
+}
+
+/*****************************************************************************
+* Function Name: Send_Touch_Over_BLE
+******************************************************************************
+* Summary:
+* Handles loading Battery Alert Service (BAS) data into BLE output packet
+*
+* Parameters:
+* None
+*
+* Return:
+* None
+*
+* Side Effects:
+* None
+*
+*****************************************************************************/
+void Send_Touch_Over_BLE(void)
+{
+    uint8 Touch_Packet[1] = {0u};
+    
+    
+    
+    
 }
 
 /*****************************************************************************
