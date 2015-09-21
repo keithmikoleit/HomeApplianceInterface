@@ -146,6 +146,10 @@ void Touch_Process(void)
             
             /* Process Scan Results */
             ProcessGestures();
+            
+            /* Let BLE know data is ready */
+            TouchResult.Data_Ready = true;
+            
             /* Setup next touch scan */
             mTouch_SetNextState(TOUCH_STARTSCAN);
             /* finished processing, dequeue */

@@ -35,10 +35,12 @@ CYBLE_GATTS_HANDLE_VALUE_NTF_T notificationHandle;
 
 /* Notification Flags */
 uint8 Batt_Notification;
+uint8 Touch_Notification;
 
 /* This flag is used to let application update the CCCD value for correct read 
 * operation by connected Central device */
 uint8 Update_Batt_Notification = false;
+uint8 Update_Touch_Notification = false;
 
 /***************************************
 *   Local Function Prototypes
@@ -159,6 +161,13 @@ void Stack_Event_Handler(uint32 event, void *eventParam)
 			
 			/* Extract the Write data sent by Client */
             wrReqParam = (CYBLE_GATTS_WRITE_REQ_PARAM_T *) eventParam;
+            
+            /* Touch Notification Change */
+            if(CYBLE_TOUCH_SLIDER_CURRENT_CENTROID_CLIENT_CHARACTERISTIC_CONFIGURATION_DESC_HANDLE == wrReqParam->handleValPair.attrHandle)
+            {
+                Touch_Notification = wrReqParam->handleValPair.value.val[CYBLE_TOUCH_SLIDER_CURRENT_CENTROID_CLIENT_CHARACTERISTIC_CONFIGURATION_DESC_INDEX];
+                Update_Touch_Notification = true;
+            }
 			
 			/* Send the response to the write request received. */
 			CyBle_GattsWriteRsp(cyBle_connHandle);
@@ -289,11 +298,23 @@ void Send_BAS_Over_BLE(void)
 *****************************************************************************/
 void Send_Touch_Over_BLE(void)
 {
-    uint8 Touch_Packet[1] = {0u};
+    uint8 Touch_Packet[TOUCH_CHAR_DATA_LEN] = {0u};
     
-    
-    
-    
+    // TODO add debug signals to this function
+    if((TouchResult.Data_Ready == true) && Touch_Notification)
+    {
+        /* send touch data to host client */
+        Set32ByPtr(Touch_Packet, (uint8)TouchResult.CurrentCentroid);
+        
+        notificationHandle.attrHandle = CYBLE_TOUCH_SLIDER_CURRENT_CENTROID_CHAR_HANDLE;
+        notificationHandle.value.val = Touch_Packet;
+        notificationHandle.value.len = TOUCH_CHAR_DATA_LEN;
+        
+        CyBle_GattsNotification(cyBle_connHandle, &notificationHandle);
+        
+        /* Clear Flag indicating we have send the current data */
+        TouchResult.Data_Ready = false;
+    }    
 }
 
 /*****************************************************************************
@@ -316,7 +337,14 @@ void Send_Touch_Over_BLE(void)
 *****************************************************************************/
 void Check_For_BLE_Data(void)
 {
-    //uint8 Gatt_Temp[4] = {0,0,0,0};         /* Working Temp Variable */
+    uint8 Gatt_Temp[4] = {0,0,0,0};         /* Working Temp Variable */
+
+    if(Update_Touch_Notification)
+    {
+        Set16ByPtr(Gatt_Temp, Touch_Notification);
+        Update_Gatts_Attribute(CYBLE_TOUCH_SLIDER_CURRENT_CENTROID_CLIENT_CHARACTERISTIC_CONFIGURATION_DESC_HANDLE, Gatt_Temp, CCC_DATA_LEN);
+        Update_Touch_Notification = false;
+    }
 }
 
 /*****************************************************************************
