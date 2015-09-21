@@ -47,24 +47,10 @@ extern uint8 BLE_Enable;
 #define MILD_ALERT         (1u)
 #define HIGH_ALERT         (2u)
 
-/* EDA BLE Defines */
-#define EDA_CHAR_DATA_LEN               (4u)
-#define CCC_DATA_LEN                    (2u)
-#define EDA_CCC_INDEX		            (0u)
-#define EDA_INTERVAL_DATA_LEN           (2u)
     
-/* Temperature BLE Defines */
-#define TEMP_CHAR_DATA_LEN              (5u)     /* 1 byte flag + 4 byte temp */
-    #define HTS_FLAGS_OFFSET            (0x00)
-    #define HTS_TEMP_OFFSET             (0x01)
-
-/* RSCS BLE Defines */
-#define RSCS_CHAR_DATA_LEN              (4u)     /* 1 byte Flags + 
-                                                    2 byte Speed +
-                                                    1 byte Cadence */
-#define RSCS_FLAGS_OFFSET               (0x00)
-#define RSCS_SPEED_OFFSET               (0x01)
-#define RSCS_CADENCE_OFFSET             (0x03)
+/* Touch BLE Defines */
+#define TOUCH_CHAR_DATA_LEN             (1u)
+#define CCC_DATA_LEN                    (2u)
     
 typedef enum _BLE_STATE
 {
